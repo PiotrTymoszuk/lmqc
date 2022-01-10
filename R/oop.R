@@ -82,7 +82,9 @@
 
       summ_tbl <- get_estimates(lm_analysis_object, ...)
 
-      extr_regex <- paste(lm_analysis_object$indep_variable, collapse = '|')
+      extr_regex <- paste(c(lm_analysis_object$indep_variable,
+                            lm_analysis_object$confounder),
+                          collapse = '|')
 
       summ_tbl <- dplyr::mutate(summ_tbl,
                                 response = lm_analysis_object$response,
@@ -100,12 +102,20 @@
                                                NA,
                                                ifelse(variable == 'Intercept',
                                                       'baseline',
-                                                      level)))
+                                                      level)),
+                                confounder = ifelse(variable == lm_analysis_object$confounder,
+                                                    'yes', 'no'))
+
+      summ_tbl <- dplyr::left_join(summ_tbl,
+                                   count_model(lm_analysis_object),
+                                   by = c('variable', 'level'))
 
       summ_tbl[c('response',
                  'parameter',
                  'variable',
                  'level',
+                 'confounder',
+                 'n',
                  'n_complete',
                  'family',
                  'link_fun',
@@ -233,13 +243,14 @@
 #' @param ... extra parameters passed to inference (\code{\link{get_estimates}}), fit (\code{\link{get_stats}})
 #' and prediction functions (\code{\link{predict.lm_analysis}})
 #' @details 'data' returns the model frame, 'formula' returns the formula, 'inference' returns
-#' the inference summary, 'fit' the summary of fit stats, 'n' the number of complete cases.
+#' the inference summary, 'fit' the summary of fit stats, 'n' the number of complete cases, 'n_levels' the number
+#' of complete observations within the variable levels
 #' @return the requested feature.
 #' @export extract.lm_analysis
 #' @export
 
   extract.lm_analysis <- function(lm_analysis_object,
-                                  what = c('data', 'formula', 'inference', 'fit', 'n'), ...) {
+                                  what = c('data', 'formula', 'inference', 'fit', 'n', 'n_levels'), ...) {
 
     stopifnot(class(lm_analysis_object) == 'lm_analysis')
 
@@ -251,7 +262,8 @@
            inference = summary(lm_analysis_object, type = 'inference', ...),
            fit = summary(lm_analysis_object, type = 'fit', ...),
            n = nobs(lm_analysis_object),
-           prediction = predict(lm_analysis_object, ...))
+           prediction = predict(lm_analysis_object, ...),
+           n_levels = count_model(lm_analysis_object))
 
   }
 

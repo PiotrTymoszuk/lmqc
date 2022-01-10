@@ -125,8 +125,8 @@
 
 #' Extract model quality statistics.
 #'
-#' @description calculates AIC, BIC, R squared, mean squared and absolute error of the given linear model
-#' @details R squared is calculated as described for \code{\link[rsq]{rsq}}
+#' @description calculates AIC, BIC, R squared, mean squared and absolute error of the given linear model.
+#' @details R squared is calculated as described for \code{\link[rsq]{rsq}}.
 #' @param linear_model lm or glm class model or an object of the lm_analysis class.
 #' @param r_sq_type the type of R-squared (only applicable for generalized linear models), please refer to \code{\link[rsq]{rsq}} for details.
 #' @param type.residuals type of the residuals used for error calculation, defaults to 'working'.
@@ -161,3 +161,30 @@
                    mse = mean(resids^2))
 
   }
+
+#' Extract variable n numbers.
+#'
+#' @description extracts the numbers of complete cases for numeric features and level counts for categorical variables.
+#' @param linear_model lm or glm class model or an object of the lm_analysis class.
+#' @return a data frame with counts
+#' @export
+
+  count_model <- function(linear_model) {
+
+    if(any(class(linear_model) == 'lm_analysis')) {
+
+      linear_model <- linear_model$model
+
+    }
+
+    if(!any(class(linear_model) == 'lm')) stop('Please provide a valid lm or glm class object.', call. = FALSE)
+
+    mod_data <- model.frame(linear_model)[, -1] ## the response is skipped
+
+    mod_vars <- names(mod_data)
+
+    purrr::map_dfr(mod_vars,
+                   ~count_(data = mod_data, variable = .x))
+
+  }
+

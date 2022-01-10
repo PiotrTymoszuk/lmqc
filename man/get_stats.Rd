@@ -22,8 +22,8 @@ a data frame with the n number of complete observations, AIC, BIC, R squared, de
 mse (mean squared error)
 }
 \description{
-calculates AIC, BIC, R squared, mean squared and absolute error of the given linear model
+calculates AIC, BIC, R squared, mean squared and absolute error of the given linear model.
 }
 \details{
-R squared is calculated as described for \code{\link[rsq]{rsq}}
+R squared is calculated as described for \code{\link[rsq]{rsq}}.
 }

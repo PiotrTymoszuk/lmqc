@@ -98,3 +98,36 @@
                   .expect.norm = stats::qnorm(stats::ppoints(nrow(data))))
 
   }
+
+#' Count levels of a variable.
+#'
+#' @description Count factor variables or returns the number of complete cases for numeric features.
+#' @param data data frame.
+#' @param variable name of the variable of interest
+#' @return a data frame with counts#'
+
+  count_ <- function(data, variable) {
+
+    data <- dplyr::filter(data, !is.na(.data[[variable]]))
+
+    if(is.numeric(data[[variable]])) {
+
+      tibble::tibble(variable = variable,
+                     level = NA_character_,
+                     n = nrow(data))
+
+    } else {
+
+      count_tbl <- dplyr::count(data, .data[[variable]])
+
+      count_tbl <- dplyr::mutate(count_tbl,
+                                 level = .data[[variable]],
+                                 variable = variable)
+
+      count_tbl[c('variable',
+                  'level',
+                  'n')]
+
+    }
+
+  }
