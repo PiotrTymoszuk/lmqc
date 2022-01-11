@@ -6,7 +6,7 @@
 \usage{
 \method{extract}{lm_analysis}(
   lm_analysis_object,
-  what = c("data", "formula", "inference", "fit", "n"),
+  what = c("data", "formula", "inference", "fit", "n", "n_levels"),
   ...
 )
 }
@@ -26,5 +26,6 @@ a handy extractor function enabling access to the model frame, formulas and more
 }
 \details{
 'data' returns the model frame, 'formula' returns the formula, 'inference' returns
-the inference summary, 'fit' the summary of fit stats, 'n' the number of complete cases.
+the inference summary, 'fit' the summary of fit stats, 'n' the number of complete cases, 'n_levels' the number
+of complete observations within the variable levels
 }

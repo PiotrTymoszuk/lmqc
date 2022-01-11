@@ -1,6 +1,6 @@
 # This script provides S3 oop solutions for the lm_analysis class objects
 
-# generics -----
+# Generics -----
 
 #' Extract features of an object
 #'
@@ -39,7 +39,7 @@
 
   }
 
-# basic lm_analysis methods: summary, printing and plotting ------
+# Basic lm_analysis methods: summary, printing and plotting ------
 
 #' Summarize inference or fit stats for a lm_analysis object.
 #'
