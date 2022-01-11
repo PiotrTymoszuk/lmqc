@@ -263,3 +263,156 @@
   }
 
 # Variable importance scree and bar plots -----
+
+#' Plot percentage of variance/deviance for lm_analysis objects.
+#'
+#' @description Presents percent data set variance/deviance explained by the model components
+#' as a bar or scree plot.
+#' @details Percentage of variance/deviance is calulated as described for \code{\link{anova.lm_analysis}}.
+#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param plot_form form of the plot, defaults to bar.
+#' @param plot_title text presented in the plot title.
+#' @param plot_subtitle text presented in the plot subtitle.
+#' @param plot_tag text presented in the plot tag.
+#' @param cust_theme custom ggplot2 theme.
+#' @param bar_color bar fill color, ignored for the scree plot option.
+#' @param line_color line color, ignored for the bar plot option.
+#' @param line_size line size, ignored for the bar plot option.
+#' @param show_points logical, should point be displayed in the scree plot? ignored for the bar plot option.
+#' @param point_color point color, ignored it show_points is FALSE, ignored for the bar plot option.
+#' @param point_size point size, ignored it show_points is FALSE, ignored for the bar plot option.
+#' @param residual_color color of the residual bar/point.
+#' @param show_p logical, should ANOVA p values be displayed in the plot?
+#' @param p_size size of the p value text, ignored if show_p is FALSE.
+#' @param p_hjust horizontal justification of the p value text, ignored if show_p is FALSE.
+#' @param p_vjust vertical justification of the p value text, ignored if show_p is FALSE.
+#' @param signif_digits significant digits, used for rounding of the p value.
+#' @param ... additional arguments passed to ANOVA calculating functions, see: \code{\link{anova.lm_analysis}}.
+#' @return a bar or scree ggplot graphic.
+#' @export
+
+  plot_importance <- function(lm_analysis_object,
+                              plot_form = c('bar', 'scree'),
+                              plot_title = NULL,
+                              plot_subtitle = NULL,
+                              plot_tag = NULL,
+                              cust_theme = ggplot2::theme_classic(),
+                              bar_color = 'steelblue',
+                              line_color = 'gray70',
+                              line_size = 0.5,
+                              show_points = TRUE,
+                              point_color = 'steelblue',
+                              point_size = 2,
+                              residual_color = 'gray60',
+                              show_p = TRUE,
+                              p_size = 2.75,
+                              p_hjust = -0.2,
+                              p_vjust = 0,
+                              signif_digits = 2, ...) {
+
+    ## user entry control
+
+    if(!any(class(lm_analysis_object) == 'lm_analysis')) stop('Please provide a valid lm_analysis object.', call. = FALSE)
+    if(!any(class(cust_theme) == 'theme')) stop('Please provide a valid ggplot2 theme.', call. = FALSE)
+
+    stopifnot(all(is.numeric(c(line_size, point_size, p_size, p_hjust, p_vjust, signif_digits))))
+
+    stopifnot(is.logical(show_points))
+    stopifnot(is.logical(show_p))
+
+    signif_digits <- as.integer(signif_digits)
+
+    plot_form <- match.arg(plot_form[1], c('bar', 'scree'))
+
+    ## plotting table
+
+    plotting_tbl <- anova(lm_analysis_object, ...)
+
+    if(!'frac_explained' %in% names(plotting_tbl)) stop('No fraction of explained variance/deviance could be extracted from the lm_anaylsis object.', call. = FALSE)
+    if(!'variable' %in% names(plotting_tbl)) stop('No fraction of explained variance/deviance could be extracted from the lm_anaylsis object.', call. = FALSE)
+
+    plotting_tbl <- dplyr::filter(plotting_tbl, variable != 'NULL')
+
+    plotting_tbl <- dplyr::mutate(plotting_tbl,
+                                  plot_order = ifelse(variable == 'Residuals', 1, 2),
+                                  var_type = ifelse(variable == 'Residuals', 'null', 'model'))
+
+    plotting_tbl <- dplyr::arrange(plotting_tbl, plot_order, frac_explained)
+
+    plotting_tbl <- dplyr::mutate(plotting_tbl, plot_order = 1:nrow(plotting_tbl))
+
+    ## variance plot
+
+    if(plot_form == 'bar') {
+
+      imp_plot <- ggplot2::ggplot(plotting_tbl,
+                                  ggplot2::aes(x = .data[['frac_explained']],
+                                               y = stats::reorder(.data[['variable']], .data[['plot_order']]),
+                                               fill = .data[['var_type']])) +
+        ggplot2::geom_bar(stat = 'identity',
+                          color = 'black') +
+        ggplot2::scale_fill_manual(values = c('model' = bar_color,
+                                              'null' = residual_color)) +
+        ggplot2::guides(fill = FALSE) +
+        cust_theme +
+        ggplot2::theme(axis.title.y = ggplot2::element_blank()) +
+        ggplot2::labs(title = plot_title,
+                      subtitle = plot_subtitle,
+                      tag = plot_tag,
+                      x = if('Deviance' %in% names(plotting_tbl)) '% deviance' else '% variance')
+
+    } else {
+
+      plotting_tbl <- dplyr::mutate(plotting_tbl,
+                                    group_var = 'group')
+
+      imp_plot <- ggplot2::ggplot(plotting_tbl,
+                                  ggplot2::aes(y = .data[['frac_explained']],
+                                               x = stats::reorder(.data[['variable']], -.data[['plot_order']]),
+                                               group = .data[['group_var']])) +
+        ggplot2::geom_line(color = line_color,
+                           size = line_size)
+
+      if(show_points) {
+
+        imp_plot <- imp_plot +
+          ggplot2::geom_point(size = point_size,
+                              ggplot2::aes(color = .data[['var_type']]))
+
+      }
+
+      imp_plot <- imp_plot +
+        ggplot2::scale_color_manual(values = c('model' = bar_color,
+                                               'null' = residual_color)) +
+        ggplot2::guides(color = FALSE) +
+        cust_theme +
+        ggplot2::theme(axis.title.x = ggplot2::element_blank()) +
+        ggplot2::labs(title = plot_title,
+                      subtitle = plot_subtitle,
+                      tag = plot_tag,
+                      y = if('Deviance' %in% names(plotting_tbl)) '% deviance' else '% variance')
+
+    }
+
+    ## p value display option
+
+    p_variable <- names(plotting_tbl)[stringi::stri_detect(names(plotting_tbl), fixed = 'Pr')]
+
+    if(show_p & length(p_variable) > 0) {
+
+      imp_plot$data <- dplyr::mutate(imp_plot$data,
+                                     p_label = ifelse(.data[[p_variable[1]]] < 0.05,
+                                                      paste('p =', signif(.data[[p_variable[1]]], signif_digits)),
+                                                      paste0('ns (p = ', signif(.data[[p_variable[1]]], signif_digits), ')')))
+
+      imp_plot <- imp_plot +
+        ggplot2::geom_text(ggplot2::aes(label = .data[['p_label']]),
+                           size = p_size,
+                           hjust = p_hjust,
+                           vjust = p_vjust)
+
+    }
+
+    return(imp_plot)
+
+  }
