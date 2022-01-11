@@ -102,9 +102,21 @@
                                                NA,
                                                ifelse(variable == 'Intercept',
                                                       'baseline',
-                                                      level)),
-                                confounder = ifelse(variable == lm_analysis_object$confounder,
-                                                    'yes', 'no'))
+                                                      level)))
+
+      if(is.null(lm_analysis_object$confounder)) {
+
+        summ_tbl <- dplyr::mutate(summ_tbl,
+                                  confounder = 'no')
+
+      } else {
+
+        summ_tbl <- dplyr::mutate(summ_tbl,
+                                  confounder = ifelse(variable == lm_analysis_object$confounder,
+                                                      'yes', 'no'))
+
+      }
+
 
       summ_tbl <- dplyr::left_join(summ_tbl,
                                    count_model(lm_analysis_object),

@@ -12,7 +12,7 @@ count_(data, variable)
 \item{variable}{name of the variable of interest}
 }
 \value{
-a data frame with counts#'
+a data frame with counts
 }
 \description{
 Count factor variables or returns the number of complete cases for numeric features.

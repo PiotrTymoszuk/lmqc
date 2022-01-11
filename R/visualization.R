@@ -191,16 +191,22 @@
 #' Generates a ggplot with estimate and CI values as described for \code{\link{plot_forest.default}}
 #' and presents extra model statistics in the sub-title or tag.
 #' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param transf_fun function used for transformation of the estimates and confidence intervals, identity() by default.
+#' @param ci_method ci_method specifies how the confidence intervals should be calculated, see \code{\link{get_estimates}}
+#' for details.
 #' @param plot_title text to be displayed in the plot title.
 #' @param stats_position position, where the fit stats are displayed, subtitle by default.
 #' @param show_stats fit stats to be presented in the plot, see \code{\link{summary.lm_analysis}} for details.
 #' @param cust_theme cust_theme custom ggplot2 theme.
 #' @param signif_digits significant digits, used for rounding of the estimate, 95\% CI values and fit stats.
 #' @param ... extra arguments passed to \code{\link{plot_forest.default}}.
+#' @return a Forest plot as a ggplot object.
 #' @export plot_forest.lm_analysis
 #' @export
 
   plot_forest.lm_analysis <- function(lm_analysis_object,
+                                      transf_fun = identity,
+                                      ci_method = c('default', 'distribution', 'normal'),
                                       plot_title = NULL,
                                       stats_position = c('subtitle', 'tag', 'none'),
                                       show_stats = c('n_complete', 'adj_rsq', 'aic', 'mae'),
@@ -211,7 +217,13 @@
 
     stats_position <- match.arg(stats_position[1], c('subtitle', 'tag', 'none'))
 
-    plotting_tbl <- summary(lm_analysis_object, 'inference')
+    ci_method <- match.arg(ci_method[1], c('default', 'distribution', 'normal'))
+
+    plotting_tbl <- summary(lm_analysis_object,
+                            type = 'inference',
+                            ci_method = ci_method,
+                            transf_fun = transf_fun)
+
     fit_stats <- summary(lm_analysis_object, 'fit')
 
     if(any(!show_stats %in% names(fit_stats))) stop('Please specify the fit stats as in the output of summary.lm_analysis()',
@@ -249,3 +261,5 @@
            tag = forest + ggplot2::labs(tag = stats_lab))
 
   }
+
+# Variable importance scree and bar plots -----

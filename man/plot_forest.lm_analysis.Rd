@@ -6,6 +6,8 @@
 \usage{
 \method{plot_forest}{lm_analysis}(
   lm_analysis_object,
+  transf_fun = identity,
+  ci_method = c("default", "distribution", "normal"),
   plot_title = NULL,
   stats_position = c("subtitle", "tag", "none"),
   show_stats = c("n_complete", "adj_rsq", "aic", "mae"),
@@ -16,6 +18,11 @@
 }
 \arguments{
 \item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+
+\item{transf_fun}{function used for transformation of the estimates and confidence intervals, identity() by default.}
+
+\item{ci_method}{ci_method specifies how the confidence intervals should be calculated, see \code{\link{get_estimates}}
+for details.}
 
 \item{plot_title}{text to be displayed in the plot title.}
 
@@ -28,6 +35,9 @@
 \item{signif_digits}{significant digits, used for rounding of the estimate, 95\% CI values and fit stats.}
 
 \item{...}{extra arguments passed to \code{\link{plot_forest.default}}.}
+}
+\value{
+a Forest plot as a ggplot object.
 }
 \description{
 Generates a customized Forest plot with the model estimates and 95\% confidence intervals (CI).

@@ -104,7 +104,7 @@
 #' @description Count factor variables or returns the number of complete cases for numeric features.
 #' @param data data frame.
 #' @param variable name of the variable of interest
-#' @return a data frame with counts#'
+#' @return a data frame with counts
 
   count_ <- function(data, variable) {
 
@@ -129,5 +129,39 @@
                   'n')]
 
     }
+
+  }
+
+#' Bind two data frames differing in column names by rows.
+#'
+#' @description binds two data frames with different sets of variables.
+#' The non-common ones are filled with NAs.
+#' @param tbl1 data frame.
+#' @param tbl2 data frame.
+#' @return a data frame bound by rows.
+#' @export
+
+  outer_rbind <- function(tbl1, tbl2) {
+
+    ## missing variables
+
+    miss1 <- names(tbl2)[!names(tbl2) %in% names(tbl1)]
+    miss2 <- names(tbl1)[!names(tbl1) %in% names(tbl2)]
+
+    ## filling the tables
+
+    for(i in miss1){
+
+      tbl1 <- dplyr::mutate(tbl1, !!rlang::sym(i) := NA)
+
+    }
+
+    for(i in miss2){
+
+      tbl2 <- dplyr::mutate(tbl2, !!rlang::sym(i) := NA)
+
+    }
+
+    rbind(tbl1, tbl2)
 
   }

@@ -15,19 +15,19 @@ get_estimates(
 \arguments{
 \item{linear_model}{lm or glm class model or an object of the lm_analysis class.}
 
-\item{transf_fun}{function used for transformation of the estimates and confidence intervals, identity() by default}
+\item{transf_fun}{function used for transformation of the estimates and confidence intervals, identity() by default.}
 
 \item{ci_method}{specifies how the confidence intervals should be calculated, see details.}
 
-\item{silent_messages}{logical, silence the messages returned during confidence interval calculation}
+\item{silent_messages}{logical, silence the messages returned during confidence interval calculation.}
 
-\item{...}{extra arguments passed to \code{\link[stats]{confint}}}
+\item{...}{extra arguments passed to \code{\link[stats]{confint}}.}
 }
 \value{
 a data frame with the parameter names (as specified by the summary() generic function),
 numbers of complete observations used for model construction (n_complete),
 transformed beta estimate and confidence interval values (lower_ci, upper_ci)
-and p value
+and p value.
 }
 \description{
 extracts coefficients from a linear or generalized linear model (beta) with 95\% confidence intervals (CI)
