@@ -2,7 +2,7 @@
 % Please edit documentation in R/oop.R
 \name{step}
 \alias{step}
-\title{Extract numbers of complete observations}
+\title{Optimize models by AIC-driven elimination.}
 \usage{
 step(x, ...)
 }

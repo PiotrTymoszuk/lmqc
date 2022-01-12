@@ -247,6 +247,22 @@
 
   }
 
+#' Residuals of a lm_analysis model.
+#' @description Extracts enhanced residuals for a lm_analysis model.
+#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param ... extra arguments passed to \code{\link{get_qc_tbl}}.
+#' @return a data frame with predicted values and residuals.
+#' @export residuals.lm_analysis
+#' @export
+
+  residuals.lm_analysis <- function(lm_analysis_object, ...) {
+
+    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+
+    get_qc_tbl(lm_analysis_object, ...)
+
+  }
+
 #' Extract features of lm_analysis objects
 #'
 #' @description a handy extractor function enabling access to the model frame, formulas and more.
