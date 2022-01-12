@@ -26,7 +26,7 @@
 
   }
 
-#' Extract numbers of complete observations
+#' Optimize models by AIC-driven elimination.
 #'
 #' @description S3 generic functions used to optimize models by AIC-driven term elimination
 #' @param x model object.
