@@ -21,7 +21,8 @@
   point_plot_ <- function(data, x_var, y_var,
                           x_lab = x_var, y_lab = y_var,
                           plot_title = NULL, plot_subtitle = NULL, plot_tag = NULL,
-                          smooth = TRUE, silent = TRUE, ...) {
+                          smooth = TRUE, silent = TRUE,
+                          cust_theme = ggplot2::theme_classic(), ...) {
 
     ## table for plotting
 
@@ -58,7 +59,8 @@
                                  name = 'Candidate outlier') +
       ggplot2::labs(x = x_lab,
                     y = y_lab,
-                    title = plot_title)
+                    title = plot_title) +
+      cust_theme
 
     if(smooth) {
 

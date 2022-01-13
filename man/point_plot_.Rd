@@ -15,6 +15,7 @@ point_plot_(
   plot_tag = NULL,
   smooth = TRUE,
   silent = TRUE,
+  cust_theme = ggplot2::theme_classic(),
   ...
 )
 }
