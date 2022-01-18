@@ -179,7 +179,7 @@
 
     if(!any(class(linear_model) == 'lm')) stop('Please provide a valid lm or glm class object.', call. = FALSE)
 
-    mod_data <- model.frame(linear_model)[, -1] ## the response is skipped
+    mod_data <- tibble::as_tibble(model.frame(linear_model))[, -1] ## the response is skipped
 
     mod_vars <- names(mod_data)
 
