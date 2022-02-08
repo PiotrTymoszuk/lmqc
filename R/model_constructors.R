@@ -9,7 +9,7 @@
 #' ignored if 'formula' provided.
 #' @param confounder name of a confounding variable, treated as such by the downstream methods.
 #' @param weight_variable name of a model weight variable.
-#' @param mod_fun modeling function
+#' @param mod_fun modeling function. Currently supported are lm, glm, MASS::polr and mgcv::gam.
 #' @param family modeling function family
 #' @param error_resistant logical, if TRUE, NULL is returned without an error but a warning is raised
 #' @param verbose logical, should the
@@ -29,7 +29,7 @@
                       verbose = FALSE, ...) {
 
     if(!any(class(data) == 'data.frame')) stop('Please provide a valida data.frame or tibble object.', call. = FALSE)
-    if(is.null(response) & is.null(indep_variable) & is.null(indep_variable) & is.null(formula)) {
+    if(all(c(is.null(response), is.null(indep_variable), is.null(formula)))) {
 
       stop('Names of response and independent variable or a valid formla are required', call. = FALSE)
 
@@ -67,6 +67,18 @@
 
       formula <- as.formula(formula)
 
+    } else {
+
+      form_string <- as.character(formula)
+
+      response <- form_string[[2]]
+
+      indep_variable <- stringi::stri_split(form_string[[3]], regex = '\\+|\\*')
+
+      indep_variable <- unlist(indep_variable)
+
+      indep_variable <- stringi::stri_replace_all(indep_variable, regex = '\\s+', replacement = '')
+
     }
 
     if(verbose) {
@@ -88,12 +100,24 @@
 
     dots <- rlang::list2(...)
 
-    model_call <- rlang::call2(mod_fun,
-                               formula = formula,
-                               family = family,
-                               data = data,
-                               weights = if(is.null(weight_variable)) NULL else data[[weight_variable]],
-                               !!!dots)
+    if(is.null(family)) {
+
+      model_call <- rlang::call2(mod_fun,
+                                 formula = formula,
+                                 data = data,
+                                 weights = if(is.null(weight_variable)) NULL else data[[weight_variable]],
+                                 !!!dots)
+
+    } else {
+
+      model_call <- rlang::call2(mod_fun,
+                                 formula = formula,
+                                 family = family,
+                                 data = data,
+                                 weights = if(is.null(weight_variable)) NULL else data[[weight_variable]],
+                                 !!!dots)
+
+    }
 
     if(error_resistant) {
 

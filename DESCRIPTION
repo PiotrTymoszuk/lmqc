@@ -11,14 +11,19 @@ Authors@R:
     person("Piotr", "Tymoszuk", , "piotr.s.tymoszuk@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-0398-6034"))
 Imports: 
+    brant,
     broom,
+    DescTools,
     dplyr,
     ggplot2,
     ggrepel,
+    MASS,
+    mgcv,
     purrr,
     rlang,
     rsq,
     stats,
     stringi,
+    sure,
     tibble
 RoxygenNote: 7.1.1

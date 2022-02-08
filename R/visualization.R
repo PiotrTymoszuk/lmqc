@@ -57,6 +57,7 @@
 
   plot_forest.default <- function(data,
                                   variable = 'variable',
+                                  parameter = 'parameter',
                                   level = 'level',
                                   confounder = 'confounder',
                                   n = 'n',
@@ -105,6 +106,7 @@
     ## plotting data
 
     data <- data[c(variable,
+                   parameter,
                    level,
                    confounder,
                    n,
@@ -116,13 +118,15 @@
 
     if(hide_confounder) data <- dplyr::filter(data, .data[[confounder]] == 'no')
 
-    if(hide_baseline) data <- dplyr::filter(data, .data[[level]] != 'baseline')
+    if(hide_baseline) data <- dplyr::filter(data, .data[[level]] != 'baseline' | is.na(.data[[level]]))
 
     data <- dplyr::mutate(data,
                           y_ax = ifelse(is.na(.data[[level]]),
                                         paste0(.data[[variable]], x_text_separator, 'n = ', .data[[n_complete]]),
                                         ifelse(.data[[level]] == 'baseline',
-                                               baseline_label,
+                                               ifelse(stringi::stri_detect(parameter, fixed = '|'),
+                                                      paste(baseline_label, parameter, sep = ': '),
+                                                      baseline_label),
                                                paste0(.data[[variable]], ': ', .data[[level]],
                                                       x_text_separator, 'n = ', .data[[n]]))),
                           estimate_lab = paste0(signif(.data[[estimate]], signif_digits),
@@ -236,13 +240,14 @@
                    adj_rsq = paste('adj. R\u00B2 =', signif(fit_stats$adj_rsq, signif_digits)),
                    deviance = paste('Dev. =', signif(fit_stats$deviance, signif_digits)),
                    mae = paste('MAE =', signif(fit_stats$mae, signif_digits)),
-                   mse = paste('MSE =', signif(fit_stats$mse, signif_digits)))
+                   rmse = paste('RMSE =', signif(fit_stats$rmse, signif_digits)))
 
     stats_lab <- paste(stats_lab[show_stats],
                        collapse = ', ')
 
     forest <- lmqc::plot_forest.default(data = plotting_tbl,
                                         variable = 'variable',
+                                        parameter = 'parameter',
                                         level = 'level',
                                         confounder = 'confounder',
                                         n = 'n',
@@ -328,8 +333,21 @@
 
     plotting_tbl <- anova(lm_analysis_object, ...)
 
-    if(!'frac_explained' %in% names(plotting_tbl)) stop('No fraction of explained variance/deviance could be extracted from the lm_anaylsis object.', call. = FALSE)
-    if(!'variable' %in% names(plotting_tbl)) stop('No fraction of explained variance/deviance could be extracted from the lm_anaylsis object.', call. = FALSE)
+    if(!'frac_explained' %in% names(plotting_tbl)) {
+
+      warning('No fraction of explained variance/deviance could be extracted from the lm_anaylsis object.', call. = FALSE)
+
+      return(NULL)
+
+    }
+
+    if(!'variable' %in% names(plotting_tbl)) {
+
+      warning('No fraction of explained variance/deviance could be extracted from the lm_anaylsis object.', call. = FALSE)
+
+      return(NULL)
+
+    }
 
     plotting_tbl <- dplyr::filter(plotting_tbl, variable != 'NULL')
 

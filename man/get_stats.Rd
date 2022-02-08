@@ -11,19 +11,23 @@ get_stats(
 )
 }
 \arguments{
-\item{linear_model}{lm or glm class model or an object of the lm_analysis class.}
+\item{linear_model}{lm, glm, polr or gam class model or an object of the lm_analysis class.}
 
-\item{type.residuals}{type of the residuals used for error calculation, defaults to 'working'.}
+\item{type.residuals}{type of the residuals used for error calculation, defaults to 'working'. Residuals for a polr class
+models are calculated with \code{\link[sure]{resids}}.}
 
 \item{r_sq_type}{the type of R-squared (only applicable for generalized linear models), please refer to \code{\link[rsq]{rsq}} for details.}
 }
 \value{
 a data frame with the n number of complete observations, AIC, BIC, R squared, deviance, mae (mean absolute error),
-mse (mean squared error)
+mse (mean squared error) and rmse (root mean squared error).
 }
 \description{
 calculates AIC, BIC, R squared, mean squared and absolute error of the given linear model.
 }
 \details{
 R squared is calculated as described for \code{\link[rsq]{rsq}}.
+
+For polr ordinal models, the residuals used to estimated the fir errors are obtained with \code{\link[sure]{resids}}.
+The R-squared value for such models is based on the full models - null model deviance ratio (McFadden's pseudo-R-squared).
 }

@@ -16,5 +16,5 @@ a data frame with the analysis results.
 }
 \description{
 Performs an analysis of variance/deviance for model objects as described
-for the \code{\link[stats]{anova}} generic. In addition, percent of
+for the \code{\link[stats]{anova}} generic. In addition, percent of explained variance/deviance is returned.
 }

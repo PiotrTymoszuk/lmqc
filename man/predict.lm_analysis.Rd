@@ -10,7 +10,7 @@
 \item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{...}{extra arguments passed to specific prediction methods such as \code{\link[stats]{predict.lm}}
-or \code{\link[stats]{predict.glm}}}
+or \code{\link[stats]{predict.glm}}.}
 }
 \value{
 a vector or data frame with the predicted values

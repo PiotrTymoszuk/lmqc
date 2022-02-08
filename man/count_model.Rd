@@ -7,7 +7,7 @@
 count_model(linear_model)
 }
 \arguments{
-\item{linear_model}{lm or glm class model or an object of the lm_analysis class.}
+\item{linear_model}{lm, glm, polr or gam class model or an object of the lm_analysis class.}
 }
 \value{
 a data frame with counts

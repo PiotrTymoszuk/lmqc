@@ -30,7 +30,7 @@ ignored if 'formula' provided.}
 
 \item{weight_variable}{name of a model weight variable.}
 
-\item{mod_fun}{modeling function}
+\item{mod_fun}{modeling function. Currently supported are lm, glm, MASS::polr and mgcv::gam.}
 
 \item{family}{modeling function family}
 

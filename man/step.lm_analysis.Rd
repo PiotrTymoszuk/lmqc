@@ -4,12 +4,14 @@
 \alias{step.lm_analysis}
 \title{Model optimization by AIC driven elimination}
 \usage{
-\method{step}{lm_analysis}(lm_analysis_object, ...)
+\method{step}{lm_analysis}(lm_analysis_object, step_fun = stats::step, ...)
 }
 \arguments{
 \item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
-\item{...}{other arguments passed to \code{\link[stats]{step}}.}
+\item{step_fun}{a function used to eliminate the model terms.}
+
+\item{...}{other arguments passed to \code{\link[stats]{step}} or other elimination function.}
 }
 \value{
 A lm_analysis object with the reduced set of explanatory variables.

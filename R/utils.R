@@ -26,37 +26,50 @@
 
     ## table for plotting
 
-    if('.rownames' %in% names(data)) {
+    if('.candidate_missfit' %in% names(data)) {
 
-      data <- dplyr::mutate(data, misslab = ifelse(.candidate_missfit == 'yes',
-                                                   .rownames,
-                                                   NA))
+      if('.rownames' %in% names(data)) {
+
+        data <- dplyr::mutate(data, misslab = ifelse(.candidate_missfit == 'yes',
+                                                     .rownames,
+                                                     NA))
+
+      } else {
+
+        data <- dplyr::mutate(data, misslab = ifelse(.candidate_missfit == 'yes',
+                                                     .observation,
+                                                     NA))
+
+      }
+
+      fill_colors <- c(no = 'cornflowerblue',
+                       yes = 'firebrick4')
+
+      point_plot <- ggplot2::ggplot(data,
+                                    ggplot2::aes(x = .data[[x_var]],
+                                                 y = .data[[y_var]],
+                                                 fill = .candidate_missfit)) +
+        ggplot2::geom_point(size = 2,
+                            shape = 21) +
+        ggrepel::geom_text_repel(ggplot2::aes(label = misslab),
+                                 show.legend = FALSE) +
+        ggplot2::scale_fill_manual(values = fill_colors,
+                                   name = 'Candidate outlier')
 
     } else {
 
-      data <- dplyr::mutate(data, misslab = ifelse(.candidate_missfit == 'yes',
-                                                   .observation,
-                                                   NA))
+      point_plot <- ggplot2::ggplot(data,
+                                    ggplot2::aes(x = .data[[x_var]],
+                                                 y = .data[[y_var]])) +
+        ggplot2::geom_point(size = 2,
+                            shape = 21,
+                            fill = 'steelblue')
 
     }
 
-    ## fill colors
-
-    fill_colors <- c(no = 'cornflowerblue',
-                     yes = 'firebrick4')
-
     ## point plot
 
-    point_plot <- ggplot2::ggplot(data,
-                                  ggplot2::aes(x = .data[[x_var]],
-                                               y = .data[[y_var]],
-                                               fill = .candidate_missfit)) +
-      ggplot2::geom_point(size = 2,
-                          shape = 21) +
-      ggrepel::geom_text_repel(ggplot2::aes(label = misslab),
-                               show.legend = FALSE) +
-      ggplot2::scale_fill_manual(values = fill_colors,
-                                 name = 'Candidate outlier') +
+    point_plot <- point_plot +
       ggplot2::labs(x = x_lab,
                     y = y_lab,
                     title = plot_title) +

@@ -7,7 +7,7 @@
 get_qc_plots(linear_model, cust_theme = ggplot2::theme_classic(), ...)
 }
 \arguments{
-\item{linear_model}{lm or glm class model or an object of the lm_analysis class.}
+\item{linear_model}{lm, glm, polr or lm_analysis class model.}
 
 \item{cust_theme}{customized plot theme provided by the user.}
 

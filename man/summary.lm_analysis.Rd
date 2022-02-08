@@ -4,17 +4,19 @@
 \alias{summary.lm_analysis}
 \title{Summarize inference or fit stats for a lm_analysis object.}
 \usage{
-\method{summary}{lm_analysis}(lm_analysis_object, type = c("inference", "fit"), ...)
+\method{summary}{lm_analysis}(lm_analysis_object, type = c("inference", "fit", "assumptions"), ...)
 }
 \arguments{
 \item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{type}{type of the statistics returned.}
 
-\item{...}{extra arguments passed to the \code{\link{get_estimates}} or \code{\link{get_stats}} functions.}
+\item{...}{extra arguments passed to the \code{\link{get_estimates}}, \code{\link{get_stats}} functions or
+normality and variance equality testing functions.}
 }
 \value{
-a data frame with requested statistisc as specified for \code{\link{get_estimates}} or \code{\link{get_stats}}.
+a data frame with requested statistics as specified for \code{\link{get_estimates}}, \code{\link{get_stats}},
+\code{\link{normality}}, \code{\link{homogeneity}} and \code{\link{prop_odds}}, .
 }
 \description{
 Retrieves inference or fit statistics from an lm_analysis object.

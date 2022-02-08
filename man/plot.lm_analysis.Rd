@@ -4,14 +4,24 @@
 \alias{plot.lm_analysis}
 \title{Generates diagnostic plots for a lm_analysis object.}
 \usage{
-\method{plot}{lm_analysis}(lm_analysis_object, cust_theme = ggplot2::theme_classic(), ...)
+\method{plot}{lm_analysis}(
+  lm_analysis_object,
+  type = c("residuals", "relationship", "distribution"),
+  cust_theme = ggplot2::theme_classic(),
+  ...
+)
 }
 \arguments{
 \item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
+\item{type}{plot type: 'residuals' returns a series of diagnostic plots for model residuals,
+'relationship' plots relationship of the model response and explanatory variables,
+'distribution' plots distribution histogram of the response. The later one can be facetted by
+the user with ggplot2::facet_grid().}
+
 \item{cust_theme}{customized plot theme provided by the user.}
 
-\item{...}{extra arguments passed to \code{\link[broom]{augment}} and \code{\link{get_qc_tbl}}.}
+\item{...}{extra arguments passed to \code{\link[broom]{augment}}, \code{\link{get_qc_tbl}} or \code{\link{distribution}}.}
 }
 \value{
 returns a series of ggplot objects with the diagnostic residuals plots.

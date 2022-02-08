@@ -12,7 +12,7 @@ get_qc_tbl(
 )
 }
 \arguments{
-\item{linear_model}{lm or glm class model or an object of the lm_analysis class}
+\item{linear_model}{lm, glm, polr or lm_analysis class model.}
 
 \item{type.predict}{prediction type, as specified for \code{\link[broom]{augment}}, defaults to 'link'.}
 
@@ -24,7 +24,7 @@ get_qc_tbl(
 a data frame with the fitted values, true outcome, residuals and candidate outliers.
 }
 \description{
-Extracts extended residuals of a linear model and potantial outliers,
+Extracts extended residuals of a linear model and potential outliers,
 }
 \details{
 a wrapper around \code{\link[broom]{augment}} with some extra output including confidence intervals

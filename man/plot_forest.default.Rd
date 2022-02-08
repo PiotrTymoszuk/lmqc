@@ -7,6 +7,7 @@
 \method{plot_forest}{default}(
   data,
   variable = "variable",
+  parameter = "parameter",
   level = "level",
   confounder = "confounder",
   n = "n",

@@ -20,7 +20,8 @@ and, optionally, test results.
 Performs analysis of variance (lm) or deviance (glm) for lm_analysis objects.
 }
 \details{
-The terms are added sequentially, see: \code{\link[stats]{anova.lm}} or \code{\link[stats]{anova.glm}}
-for details and additional arguments. The fraction of explained variance is based on sum of squares
-for lm class objects or on deviance for glm models.
+The terms are added sequentially, see: \code{\link[stats]{anova.lm}}, \code{\link[stats]{anova.glm}} or
+\code{\link[mgcv]{anova.gam}} for details and additional arguments.
+The fraction of explained variance is based on sum of squares for lm class objects or on deviance for glm models.
+This paramater is currently absent from the output for GAM models. Polr models return NULL and a warning
 }

@@ -13,7 +13,7 @@ get_estimates(
 )
 }
 \arguments{
-\item{linear_model}{lm or glm class model or an object of the lm_analysis class.}
+\item{linear_model}{lm, glm, polr or gam class model or an object of the lm_analysis class.}
 
 \item{transf_fun}{function used for transformation of the estimates and confidence intervals, identity() by default.}
 
@@ -30,13 +30,18 @@ transformed beta estimate and confidence interval values (lower_ci, upper_ci)
 and p value.
 }
 \description{
-extracts coefficients from a linear or generalized linear model (beta) with 95\% confidence intervals (CI)
-and p values.
+extracts coefficients (beta) with 95\% confidence intervals (CI)
+and p values from a linear, generalized linear model, ordinal regression or generalized additive model.
 }
 \details{
 the output estimates and ci are transformed with the 'transf_fun' argument.
 The ci_method option: calculates the CI per \code{\link[stats]{confint}} method by default, from the t or normal distribution
 as appropriate for the model type ('distribution') or explicitly from the normal distribution ('normal').
-based on the normality assumption: i. e. SEM * critical normal distribution value.
+based on the normality assumption: i. e. SEM * critical normal distribution value. 95\%CI for the intercepts ordinal models
+can be calculated assuming the normal distribution (ci_method = 'normal'), otherwise, 95\% CI are returned only for the
+non-intercept terms. For ordinal regression, p values are calculated based on the normal distribution (t = z) and hence
+approximate and valid only for large sample sizes. For GAMs (still an experimental feature), 95\%CI and p values
+are calculated based on the distribution (t or z statistic), the returned df value refers to the residual degrees of freedom.
+The general GAM-coping idea comes from https://stats.stackexchange.com/questions/398846/confidence-interval-for-non-smooth-term-in-gam-mgcv
 No correction for multiple testing is applied to the beta significance testing.
 }

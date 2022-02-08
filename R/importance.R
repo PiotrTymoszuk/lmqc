@@ -5,7 +5,7 @@
 #' Default method for computing analysis of variance/deviance.
 #'
 #' @description Performs an analysis of variance/deviance for model objects as described
-#' for the \code{\link[stats]{anova}} generic. In addition, percent of
+#' for the \code{\link[stats]{anova}} generic. In addition, percent of explained variance/deviance is returned.
 #' @param object a model object.
 #' @param ... additional arguments passed to specific methods.
 #' @return a data frame with the analysis results.
@@ -48,9 +48,10 @@
 #' Analysis of variance or deviance table for lm_analysis objects.
 #'
 #' @description Performs analysis of variance (lm) or deviance (glm) for lm_analysis objects.
-#' @details The terms are added sequentially, see: \code{\link[stats]{anova.lm}} or \code{\link[stats]{anova.glm}}
-#' for details and additional arguments. The fraction of explained variance is based on sum of squares
-#' for lm class objects or on deviance for glm models.
+#' @details The terms are added sequentially, see: \code{\link[stats]{anova.lm}}, \code{\link[stats]{anova.glm}} or
+#' \code{\link[mgcv]{anova.gam}} for details and additional arguments.
+#' The fraction of explained variance is based on sum of squares for lm class objects or on deviance for glm models.
+#' This paramater is currently absent from the output for GAM models. Polr models return NULL and a warning
 #' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param ... extra arguments passed to model-specific methods like \code{\link[stats]{anova.lm}}
 #' or \code{\link[stats]{anova.glm}}.
@@ -63,6 +64,45 @@
 
     stopifnot(class(lm_analysis_object) == 'lm_analysis')
 
-    lmqc::anova.default(lm_analysis_object$model, ...)
+    if(lm_analysis_object$model_type == 'polr') {
+
+      warning('ANOVA method for polr-type lm_anaylsis objects is not implemented.', call. = FALSE)
+
+      NULL
+
+    } else if(lm_analysis_object$model_type == 'gam') {
+
+      aov_output <- mgcv::anova.gam(lm_analysis_object$model, ...)
+
+      stat_name <- if(lm_analysis_object$family == 'gaussian') 'F' else 'Chi.sq'
+
+      p_tibble <- aov_output$pTerms.table
+
+      if(!is.null(aov_output$pTerms.table)) {
+
+        p_tibble <- dplyr::mutate(as.data.frame(p_tibble),
+                                  edf = NA)
+
+        p_tibble <- rlang::set_names(p_tibble,
+                                     c('df', stat_name, 'p_value', 'edf'))
+
+      }
+
+      s_tibble <- rlang::set_names(as.data.frame(aov_output$s.table),
+                                   c('edf', 'df', stat_name, 'p_value'))
+
+      tibble_lst <- purrr::compact(list(p_tibble,
+                                        s_tibble))
+
+      aov_output <- purrr::map_dfr(tibble_lst,
+                                   ~tibble::rownames_to_column(.x, 'variable'))
+
+      tibble::as_tibble(aov_output[c('variable', 'edf', 'df', stat_name, 'p_value')])
+
+    } else {
+
+      lmqc::anova.default(lm_analysis_object$model, ...)
+
+    }
 
   }
