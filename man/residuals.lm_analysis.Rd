@@ -4,10 +4,10 @@
 \alias{residuals.lm_analysis}
 \title{Residuals of a lm_analysis model.}
 \usage{
-\method{residuals}{lm_analysis}(lm_analysis_object, ...)
+\method{residuals}{lm_analysis}(object, ...)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{...}{extra arguments passed to \code{\link{get_qc_tbl}}.}
 }

@@ -2,12 +2,12 @@
 % Please edit documentation in R/oop.R
 \name{summary.lm_analysis}
 \alias{summary.lm_analysis}
-\title{Summarize inference or fit stats for a lm_analysis object.}
+\title{Summarize inference, fit stats or assumptions for a lm_analysis object.}
 \usage{
-\method{summary}{lm_analysis}(lm_analysis_object, type = c("inference", "fit", "assumptions"), ...)
+\method{summary}{lm_analysis}(object, type = c("inference", "fit", "assumptions"), ...)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{type}{type of the statistics returned.}
 

@@ -31,7 +31,7 @@
                             ci_method = c('default', 'distribution', 'normal'),
                             silent_messages = TRUE, ...) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -226,7 +226,7 @@
                         rsq_type = c('v','kl','sse','lr','n'),
                         type.residuals = c('working', 'response', 'deviance', 'pearson','partial')) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -286,7 +286,7 @@
 
   count_model <- function(linear_model) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 

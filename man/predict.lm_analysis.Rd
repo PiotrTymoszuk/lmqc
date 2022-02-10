@@ -4,10 +4,10 @@
 \alias{predict.lm_analysis}
 \title{Predictions for a lm_analysis model.}
 \usage{
-\method{predict}{lm_analysis}(lm_analysis_object, ...)
+\method{predict}{lm_analysis}(object, ...)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{...}{extra arguments passed to specific prediction methods such as \code{\link[stats]{predict.lm}}
 or \code{\link[stats]{predict.glm}}.}

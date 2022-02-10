@@ -51,8 +51,8 @@
 #' @details The terms are added sequentially, see: \code{\link[stats]{anova.lm}}, \code{\link[stats]{anova.glm}} or
 #' \code{\link[mgcv]{anova.gam}} for details and additional arguments.
 #' The fraction of explained variance is based on sum of squares for lm class objects or on deviance for glm models.
-#' This paramater is currently absent from the output for GAM models. Polr models return NULL and a warning
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' This parameter is currently absent from the output for GAM models. Polr models return NULL and a warning
+#' @param object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param ... extra arguments passed to model-specific methods like \code{\link[stats]{anova.lm}}
 #' or \code{\link[stats]{anova.glm}}.
 #' @return a data frame with ANOVA or deviance analysis table, fraction of explained variance/deviance
@@ -60,21 +60,21 @@
 #' @export anova.lm_analysis
 #' @export
 
-  anova.lm_analysis <- function(lm_analysis_object, ...) {
+  anova.lm_analysis <- function(object, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(object))
 
-    if(lm_analysis_object$model_type == 'polr') {
+    if(object$model_type == 'polr') {
 
       warning('ANOVA method for polr-type lm_anaylsis objects is not implemented.', call. = FALSE)
 
       NULL
 
-    } else if(lm_analysis_object$model_type == 'gam') {
+    } else if(object$model_type == 'gam') {
 
-      aov_output <- mgcv::anova.gam(lm_analysis_object$model, ...)
+      aov_output <- mgcv::anova.gam(object$model, ...)
 
-      stat_name <- if(lm_analysis_object$family == 'gaussian') 'F' else 'Chi.sq'
+      stat_name <- if(object$family == 'gaussian') 'F' else 'Chi.sq'
 
       p_tibble <- aov_output$pTerms.table
 
@@ -101,7 +101,7 @@
 
     } else {
 
-      lmqc::anova.default(lm_analysis_object$model, ...)
+      lmqc::anova.default(object$model, ...)
 
     }
 

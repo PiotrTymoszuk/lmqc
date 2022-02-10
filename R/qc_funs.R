@@ -20,7 +20,7 @@
                          type.predict = c('link', 'response', 'terms'),
                          type.residuals = c('pearson', 'deviance'), ...) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -97,7 +97,7 @@
   get_qc_plots <- function(linear_model,
                            cust_theme = ggplot2::theme_classic(), ...) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -175,7 +175,7 @@
 
   normality <- function(linear_model, ...) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -205,7 +205,7 @@
 
   homogeneity <- function(linear_model, ...) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -254,7 +254,7 @@
 
   prop_odds <- function(linear_model, ...) {
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -296,7 +296,7 @@
 
     stopifnot(any(class(cust_theme) == 'theme'))
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 
@@ -352,7 +352,7 @@
 
     stopifnot(any(class(cust_theme) == 'theme'))
 
-    if(any(class(linear_model) == 'lm_analysis')) {
+    if(is_lm_analysis(linear_model)) {
 
       linear_model <- linear_model$model
 

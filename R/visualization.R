@@ -23,7 +23,7 @@
 #' @description Generates a customized Forest plot with the model estimates and 95\% confidence intervals (CI).
 #' @details Designed to work optimally with the output of the \code{\link{summary.lm_analysis}} method applied
 #' to the objects of 'lm_analysis' class generated e.g. by \code{\link{make_lm}}.
-#' @param data data frame.
+#' @param x data frame.
 #' @param variable name of the variable storing explanatory feature labels.
 #' @param level name of the variable with storing the labels of levels for categorical explanatory features.
 #' @param confounder name of a text variable (coded yes/no) indicating if the explanatory feature has to be treated as a confounder
@@ -55,7 +55,7 @@
 #' @export plot_forest.default
 #' @export
 
-  plot_forest.default <- function(data,
+  plot_forest.default <- function(x,
                                   variable = 'variable',
                                   parameter = 'parameter',
                                   level = 'level',
@@ -87,8 +87,8 @@
 
     ### user entry control
 
-    if(!any(class(data) == 'data.frame')) stop('Please provide a data frame as data.', call. = FALSE)
-    if(any(!c(variable, level, confounder, n, n_complete, estimate, lower_ci, upper_ci, p_value) %in% names(data))) {
+    if(!any(class(x) == 'data.frame')) stop('Please provide a data frame as data.', call. = FALSE)
+    if(any(!c(variable, level, confounder, n, n_complete, estimate, lower_ci, upper_ci, p_value) %in% names(x))) {
 
       stop('Not all variables forun in data', call. = FALSE)
 
@@ -105,54 +105,54 @@
 
     ## plotting data
 
-    data <- data[c(variable,
-                   parameter,
-                   level,
-                   confounder,
-                   n,
-                   n_complete,
-                   estimate,
-                   lower_ci,
-                   upper_ci,
-                   p_value)]
+    x <- x[c(variable,
+             parameter,
+             level,
+             confounder,
+             n,
+             n_complete,
+             estimate,
+             lower_ci,
+             upper_ci,
+             p_value)]
 
-    if(hide_confounder) data <- dplyr::filter(data, .data[[confounder]] == 'no')
+    if(hide_confounder) x <- dplyr::filter(x, .data[[confounder]] == 'no')
 
-    if(hide_baseline) data <- dplyr::filter(data, .data[[level]] != 'baseline' | is.na(.data[[level]]))
+    if(hide_baseline) x <- dplyr::filter(x, .data[[level]] != 'baseline' | is.na(.data[[level]]))
 
-    data <- dplyr::mutate(data,
-                          y_ax = ifelse(is.na(.data[[level]]),
-                                        paste0(.data[[variable]], x_text_separator, 'n = ', .data[[n_complete]]),
-                                        ifelse(.data[[level]] == 'baseline',
-                                               ifelse(stringi::stri_detect(parameter, fixed = '|'),
-                                                      paste(baseline_label, parameter, sep = ': '),
-                                                      baseline_label),
-                                               paste0(.data[[variable]], ': ', .data[[level]],
-                                                      x_text_separator, 'n = ', .data[[n]]))),
-                          estimate_lab = paste0(signif(.data[[estimate]], signif_digits),
-                                                ' [', signif(.data[[lower_ci]], signif_digits),
-                                                ' - ', signif(.data[[upper_ci]], signif_digits), ']'),
-                          regulation = ifelse(.data[[p_value]] >= 0.05,
-                                              'ns',
-                                              ifelse(.data[[estimate]] < cutpoint, 'negative', 'positive')),
-                          regulation = factor(regulation, c('negative', 'ns', 'positive')))
+    x <- dplyr::mutate(x,
+                       y_ax = ifelse(is.na(.data[[level]]),
+                                     paste0(.data[[variable]], x_text_separator, 'n = ', .data[[n_complete]]),
+                                     ifelse(.data[[level]] == 'baseline',
+                                            ifelse(stringi::stri_detect(parameter, fixed = '|'),
+                                                   paste(baseline_label, parameter, sep = ': '),
+                                                   baseline_label),
+                                            paste0(.data[[variable]], ': ', .data[[level]],
+                                                   x_text_separator, 'n = ', .data[[n]]))),
+                       estimate_lab = paste0(signif(.data[[estimate]], signif_digits),
+                                             ' [', signif(.data[[lower_ci]], signif_digits),
+                                             ' - ', signif(.data[[upper_ci]], signif_digits), ']'),
+                       regulation = ifelse(.data[[p_value]] >= 0.05,
+                                           'ns',
+                                           ifelse(.data[[estimate]] < cutpoint, 'negative', 'positive')),
+                       regulation = factor(regulation, c('negative', 'ns', 'positive')))
 
     ## for a nice plotting order, the baseline is placed on the top
 
-    data <- dplyr::mutate(data,
-                          plot_order = ifelse(level == 'baseline', 0, 100))
+    x <- dplyr::mutate(x,
+                       plot_order = ifelse(level == 'baseline', 0, 100))
 
-    data <- dplyr::arrange(data,
-                           plot_order,
-                           variable,
-                           level)
+    x <- dplyr::arrange(x,
+                        plot_order,
+                        variable,
+                        level)
 
-    data <- dplyr::mutate(data,
-                          plot_order = 1:nrow(data))
+    x <- dplyr::mutate(x,
+                       plot_order = 1:nrow(x))
 
     ## forest plot
 
-    forest <- ggplot2::ggplot(data,
+    forest <- ggplot2::ggplot(x,
                               ggplot2::aes(x = .data[[estimate]],
                                            y = stats::reorder(.data[['y_ax']], -.data[['plot_order']]),
                                            color = .data[['regulation']])) +
@@ -194,7 +194,7 @@
 #' @details A method specific method for lm_analysis object (constructed e.g. by \code{\link{make_lm}}).
 #' Generates a ggplot with estimate and CI values as described for \code{\link{plot_forest.default}}
 #' and presents extra model statistics in the sub-title or tag.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param x an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param transf_fun function used for transformation of the estimates and confidence intervals, identity() by default.
 #' @param ci_method ci_method specifies how the confidence intervals should be calculated, see \code{\link{get_estimates}}
 #' for details.
@@ -208,7 +208,7 @@
 #' @export plot_forest.lm_analysis
 #' @export
 
-  plot_forest.lm_analysis <- function(lm_analysis_object,
+  plot_forest.lm_analysis <- function(x,
                                       transf_fun = identity,
                                       ci_method = c('default', 'distribution', 'normal'),
                                       plot_title = NULL,
@@ -217,18 +217,18 @@
                                       cust_theme = ggplot2::theme_classic(),
                                       signif_digits = 2, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(x))
 
     stats_position <- match.arg(stats_position[1], c('subtitle', 'tag', 'none'))
 
     ci_method <- match.arg(ci_method[1], c('default', 'distribution', 'normal'))
 
-    plotting_tbl <- summary(lm_analysis_object,
+    plotting_tbl <- summary(x,
                             type = 'inference',
                             ci_method = ci_method,
                             transf_fun = transf_fun)
 
-    fit_stats <- summary(lm_analysis_object, 'fit')
+    fit_stats <- summary(x, 'fit')
 
     if(any(!show_stats %in% names(fit_stats))) stop('Please specify the fit stats as in the output of summary.lm_analysis()',
                                                     call. = FALSE)
@@ -245,7 +245,7 @@
     stats_lab <- paste(stats_lab[show_stats],
                        collapse = ', ')
 
-    forest <- lmqc::plot_forest.default(data = plotting_tbl,
+    forest <- lmqc::plot_forest.default(x = plotting_tbl,
                                         variable = 'variable',
                                         parameter = 'parameter',
                                         level = 'level',
@@ -317,7 +317,7 @@
 
     ## user entry control
 
-    if(!any(class(lm_analysis_object) == 'lm_analysis')) stop('Please provide a valid lm_analysis object.', call. = FALSE)
+    if(!is_lm_analysis(lm_analysis_object)) stop('Please provide a valid lm_analysis object.', call. = FALSE)
     if(!any(class(cust_theme) == 'theme')) stop('Please provide a valid ggplot2 theme.', call. = FALSE)
 
     stopifnot(all(is.numeric(c(line_size, point_size, p_size, p_hjust, p_vjust, signif_digits))))

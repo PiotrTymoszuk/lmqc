@@ -41,10 +41,10 @@
 
 # Basic lm_analysis methods: summary, printing and plotting ------
 
-#' Summarize inference or fit stats for a lm_analysis object.
+#' Summarize inference, fit stats or assumptions for a lm_analysis object.
 #'
 #' @description Retrieves inference or fit statistics from an lm_analysis object.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param type type of the statistics returned.
 #' @param ... extra arguments passed to the \code{\link{get_estimates}}, \code{\link{get_stats}} functions or
 #' normality and variance equality testing functions.
@@ -53,20 +53,20 @@
 #' @export summary.lm_analysis
 #' @export
 
-  summary.lm_analysis <- function(lm_analysis_object,
+  summary.lm_analysis <- function(object,
                                   type = c('inference', 'fit', 'assumptions'), ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(lmqc::is_lm_analysis(object))
 
     type <- match.arg(type[1], c('inference', 'fit', 'assumptions'))
 
     if(type == 'fit') {
 
-      summ_tbl <- lmqc::get_stats(lm_analysis_object, ...)
+      summ_tbl <- lmqc::get_stats(object, ...)
 
       summ_tbl <- dplyr::mutate(summ_tbl,
-                                response = lm_analysis_object$response,
-                                family = if(!is.null(lm_analysis_object$family)) lm_analysis_object$family else NA)
+                                response = object$response,
+                                family = if(!is.null(object$family)) object$family else NA)
       summ_tbl[c('response',
                  'family',
                  'n_complete',
@@ -82,14 +82,14 @@
     } else if(type == 'inference') {
 
 
-      summ_tbl <- get_estimates(lm_analysis_object, ...)
+      summ_tbl <- get_estimates(object, ...)
 
-      extr_regex <- paste(c(lm_analysis_object$indep_variable,
-                            lm_analysis_object$confounder),
+      extr_regex <- paste(c(object$indep_variable,
+                            object$confounder),
                           collapse = '|')
 
       summ_tbl <- dplyr::mutate(summ_tbl,
-                                response = lm_analysis_object$response,
+                                response = object$response,
                                 variable = ifelse(parameter == '(Intercept)' | stringi::stri_detect(parameter, fixed = '|'),
                                                   'Intercept',
                                                   stringi::stri_extract_all(parameter, regex = extr_regex)),
@@ -99,7 +99,7 @@
                                                                          regex = extr_regex,
                                                                          replacement  = ''),
                                                stringi::stri_replace(parameter,
-                                                                     fixed = lm_analysis_object$confounder,
+                                                                     fixed = object$confounder,
                                                                      replacement  = '')),
                                 level = ifelse(level == '',
                                                NA,
@@ -107,7 +107,7 @@
                                                       'baseline',
                                                       level)))
 
-      if(is.null(lm_analysis_object$confounder)) {
+      if(is.null(object$confounder)) {
 
         summ_tbl <- dplyr::mutate(summ_tbl,
                                   confounder = 'no')
@@ -115,14 +115,14 @@
       } else {
 
         summ_tbl <- dplyr::mutate(summ_tbl,
-                                  confounder = ifelse(variable == lm_analysis_object$confounder,
+                                  confounder = ifelse(variable == object$confounder,
                                                       'yes', 'no'))
 
       }
 
 
       summ_tbl <- dplyr::left_join(summ_tbl,
-                                   count_model(lm_analysis_object),
+                                   count_model(object),
                                    by = c('variable', 'level'))
 
       summ_tbl[c('response',
@@ -147,13 +147,13 @@
 
     } else {
 
-      tst_results <- rbind(lmqc::normality(lm_analysis_object),
-                           lmqc::homogeneity(lm_analysis_object))
+      tst_results <- rbind(lmqc::normality(object),
+                           lmqc::homogeneity(object))
 
-      if(lm_analysis_object$model_type == 'polr') {
+      if(object$model_type == 'polr') {
 
         tst_results <- rbind(dplyr::mutate(tst_results, variable = NA),
-                             lmqc::prop_odds(lm_analysis_object))
+                             lmqc::prop_odds(object))
 
       }
 
@@ -166,23 +166,23 @@
 #' Prints the base properties of a lm_analysis object.
 #'
 #' @description Prints a handy summary of a lm_analysis object.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param x an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @return Nothing, called for side effects.
 #' @export
 
-  print.lm_analysis <- function(lm_analysis_object) {
+  print.lm_analysis <- function(x) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(x))
 
     cat('LM Analysis object')
     cat('Formula:\n')
-    print(formula(lm_analysis_object$model))
+    print(formula(x$model))
 
   }
 
 #' Generates diagnostic plots for a lm_analysis object.
 #' @description Makes a series of plots of the model residuals for visual quality control.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param x an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param type plot type: 'residuals' returns a series of diagnostic plots for model residuals,
 #' 'relationship' plots relationship of the model response and explanatory variables,
 #' 'distribution' plots distribution histogram of the response. The later one can be facetted by
@@ -193,20 +193,20 @@
 #' @export plot.lm_analysis
 #' @export
 
-  plot.lm_analysis <- function(lm_analysis_object,
+  plot.lm_analysis <- function(x,
                                type = c('residuals', 'relationship', 'distribution'),
                                cust_theme = ggplot2::theme_classic(), ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(x))
     stopifnot(any(class(cust_theme) == 'theme'))
 
     type <- match.arg(type[1], c('residuals', 'relationship', 'distribution'))
 
     switch(type,
-           residuals = lmqc::get_qc_plots(linear_model = lm_analysis_object,
+           residuals = lmqc::get_qc_plots(linear_model = x,
                                           cust_theme = cust_theme, ...),
-           relationship = lmqc::linearity(linear_model = lm_analysis_object, cust_theme = cust_theme),
-           distribution = lmqc::distribution(linear_model = lm_analysis_object, cust_theme = cust_theme, ...))
+           relationship = lmqc::linearity(linear_model = x, cust_theme = cust_theme),
+           distribution = lmqc::distribution(linear_model = x, cust_theme = cust_theme, ...))
 
   }
 
@@ -215,30 +215,30 @@
 #' Number of complete observations in a lm_analysis object
 #'
 #' @description The number of complete observations as returned by the \code{\link[stats]{nobs}} generic.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param x an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @return number of complete cases used for modeling.
 #' @export
 
-  nobs.lm_analysis <- function(lm_analysis_object) {
+  nobs.lm_analysis <- function(x, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(x))
 
-    stats::nobs(lm_analysis_object$model)
+    stats::nobs(x$model)
 
   }
 
 #' Model frame of a lm_analysis object
 #'
 #' @description The model frame of a lm_analysis object as specified by \code{\link[stats]{model.frame}}.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param formula an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @return the data frame used for modeling.
 #' @export
 
-  model.frame.lm_analysis <- function(lm_analysis_object) {
+  model.frame.lm_analysis <- function(formula, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(formula))
 
-    stats::model.frame(lm_analysis_object$model)
+    stats::model.frame(formula$model)
 
   }
 
@@ -249,77 +249,78 @@
 #' @return the formula used for modeling.
 #' @export
 
-  formula.lm_analysis <- function(lm_analysis_object) {
+  formula.lm_analysis <- function(x, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(x))
 
-    stats::formula(lm_analysis_object$model)
+    stats::formula(x$model)
 
   }
 
 #' Predictions for a lm_analysis model.
 #'
 #' @description Predictions for a lm_analysis model.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param ... extra arguments passed to specific prediction methods such as \code{\link[stats]{predict.lm}}
 #' or \code{\link[stats]{predict.glm}}.
 #' @return a vector or data frame with the predicted values
 #' @export predict.lm_analysis
 #' @export
 
-  predict.lm_analysis <- function(lm_analysis_object, ...) {
+  predict.lm_analysis <- function(object, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(object))
 
-    stats::predict(lm_analysis_object$model, ...)
+    stats::predict(object$model, ...)
 
   }
 
 #' Residuals of a lm_analysis model.
 #' @description Extracts enhanced residuals for a lm_analysis model.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param ... extra arguments passed to \code{\link{get_qc_tbl}}.
 #' @return a data frame with predicted values and residuals.
 #' @export residuals.lm_analysis
 #' @export
 
-  residuals.lm_analysis <- function(lm_analysis_object, ...) {
+  residuals.lm_analysis <- function(object, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(object))
 
-    get_qc_tbl(lm_analysis_object, ...)
+    get_qc_tbl(object, ...)
 
   }
 
 #' Extract features of lm_analysis objects
 #'
 #' @description a handy extractor function enabling access to the model frame, formulas and more.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param x an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param what name of the requested feature.
 #' @param ... extra parameters passed to inference (\code{\link{get_estimates}}), fit (\code{\link{get_stats}})
 #' and prediction functions (\code{\link{predict.lm_analysis}})
 #' @details 'data' returns the model frame, 'formula' returns the formula, 'inference' returns
-#' the inference summary, 'fit' the summary of fit stats, 'n' the number of complete cases, 'n_levels' the number
-#' of complete observations within the variable levels
+#' the inference summary, 'fit' the summary of fit stats, 'assumptions' the normality of residuals and EOV stats,
+#' 'n' the number of complete cases, 'n_levels' the number of complete observations within the variable levels
 #' @return the requested feature.
 #' @export extract.lm_analysis
 #' @export
 
-  extract.lm_analysis <- function(lm_analysis_object,
-                                  what = c('data', 'formula', 'inference', 'fit', 'n', 'n_levels'), ...) {
+  extract.lm_analysis <- function(x,
+                                  what = c('data', 'formula', 'inference', 'fit', 'assumptions', 'n', 'n_levels', 'prediction'), ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(x))
 
-    what <- match.arg(what[1], c('data', 'formula', 'inference', 'fit', 'n'))
+    what <- match.arg(what[1], c('data', 'formula', 'inference', 'fit', 'n', 'n_levels', 'prediction', 'assumptions'))
 
     switch(what,
-           data = model.frame(lm_analysis_object),
-           formula = formula(lm_analysis_object),
-           inference = summary(lm_analysis_object, type = 'inference', ...),
-           fit = summary(lm_analysis_object, type = 'fit', ...),
-           n = nobs(lm_analysis_object),
-           prediction = predict(lm_analysis_object, ...),
-           n_levels = count_model(lm_analysis_object))
+           data = model.frame(x),
+           formula = formula(x),
+           inference = summary(x, type = 'inference', ...),
+           fit = summary(x, type = 'fit', ...),
+           assumptions = summary(x, type = 'assumptions', ...),
+           n = nobs(x),
+           prediction = predict(x, ...),
+           n_levels = count_model(x))
 
   }
 
@@ -328,18 +329,18 @@
 #' Model optimization by AIC driven elimination
 #'
 #' @description Applies \code{\link[stats]{step}} to the lm_analysis object.
-#' @param lm_analysis_object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
+#' @param object an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.
 #' @param step_fun a function used to eliminate the model terms.
 #' @param ... other arguments passed to \code{\link[stats]{step}} or other elimination function.
 #' @return A lm_analysis object with the reduced set of explanatory variables.
 #' @export step.lm_analysis
 #' @export
 
-  step.lm_analysis <- function(lm_analysis_object, step_fun = stats::step, ...) {
+  step.lm_analysis <- function(object, step_fun = stats::step, ...) {
 
-    stopifnot(class(lm_analysis_object) == 'lm_analysis')
+    stopifnot(is_lm_analysis(object))
 
-    if(lm_analysis_object$model_type == 'gam') {
+    if(object$model_type == 'gam') {
 
       warning('Step method currently unavailable for the gam-type lm_analysis objects.', call. = FALSE)
 
@@ -347,32 +348,32 @@
 
     }
 
-    new_model <- step_fun(lm_analysis_object$model, ...)
+    new_model <- step_fun(object$model, ...)
 
     new_coefs <- new_model$coefficients
 
-    extr_regex <- paste(c(lm_analysis_object$indep_variable,
-                          lm_analysis_object$confounder),
+    extr_regex <- paste(c(object$indep_variable,
+                          object$confounder),
                         collapse = '|')
 
     indep_variables <- names(new_coefs)[names(new_coefs) != '(Intercept)']
 
     indep_variables <- stringi::stri_extract(indep_variables, regex = extr_regex)
 
-    if(lm_analysis_object$model_type == 'polr') {
+    if(object$model_type == 'polr') {
 
       mod_family <- NULL
 
     } else {
 
-      mod_family <- if(class(new_model)[1] == 'lm') 'gaussian' else lm_analysis_object$family
+      mod_family <- if(class(new_model)[1] == 'lm') 'gaussian' else object$family
 
     }
 
-    structure(list(response = lm_analysis_object$response,
+    structure(list(response = object$response,
                    indep_variable = unique(indep_variables),
                    confounder = NULL,
-                   weight_variable = lm_analysis_object$weight_variable,
+                   weight_variable = object$weight_variable,
                    model_type = class(new_model)[1],
                    family = mod_family,
                    model = new_model),

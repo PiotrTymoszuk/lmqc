@@ -4,10 +4,10 @@
 \alias{anova.lm_analysis}
 \title{Analysis of variance or deviance table for lm_analysis objects.}
 \usage{
-\method{anova}{lm_analysis}(lm_analysis_object, ...)
+\method{anova}{lm_analysis}(object, ...)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{...}{extra arguments passed to model-specific methods like \code{\link[stats]{anova.lm}}
 or \code{\link[stats]{anova.glm}}.}
@@ -23,5 +23,5 @@ Performs analysis of variance (lm) or deviance (glm) for lm_analysis objects.
 The terms are added sequentially, see: \code{\link[stats]{anova.lm}}, \code{\link[stats]{anova.glm}} or
 \code{\link[mgcv]{anova.gam}} for details and additional arguments.
 The fraction of explained variance is based on sum of squares for lm class objects or on deviance for glm models.
-This paramater is currently absent from the output for GAM models. Polr models return NULL and a warning
+This parameter is currently absent from the output for GAM models. Polr models return NULL and a warning
 }

@@ -4,10 +4,10 @@
 \alias{print.lm_analysis}
 \title{Prints the base properties of a lm_analysis object.}
 \usage{
-\method{print}{lm_analysis}(lm_analysis_object)
+\method{print}{lm_analysis}(x)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{x}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 }
 \value{
 Nothing, called for side effects.

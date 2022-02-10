@@ -4,10 +4,10 @@
 \alias{nobs.lm_analysis}
 \title{Number of complete observations in a lm_analysis object}
 \usage{
-\method{nobs}{lm_analysis}(lm_analysis_object)
+\method{nobs}{lm_analysis}(x, ...)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{x}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 }
 \value{
 number of complete cases used for modeling.

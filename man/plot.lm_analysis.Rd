@@ -5,14 +5,14 @@
 \title{Generates diagnostic plots for a lm_analysis object.}
 \usage{
 \method{plot}{lm_analysis}(
-  lm_analysis_object,
+  x,
   type = c("residuals", "relationship", "distribution"),
   cust_theme = ggplot2::theme_classic(),
   ...
 )
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{x}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{type}{plot type: 'residuals' returns a series of diagnostic plots for model residuals,
 'relationship' plots relationship of the model response and explanatory variables,

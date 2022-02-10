@@ -4,7 +4,7 @@
 \alias{formula.lm_analysis}
 \title{Formula of a lm_analysis object}
 \usage{
-\method{formula}{lm_analysis}(lm_analysis_object)
+\method{formula}{lm_analysis}(x, ...)
 }
 \arguments{
 \item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}

@@ -4,10 +4,10 @@
 \alias{model.frame.lm_analysis}
 \title{Model frame of a lm_analysis object}
 \usage{
-\method{model.frame}{lm_analysis}(lm_analysis_object)
+\method{model.frame}{lm_analysis}(formula, ...)
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{formula}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 }
 \value{
 the data frame used for modeling.

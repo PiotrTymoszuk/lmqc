@@ -5,7 +5,7 @@
 \title{Display modeling results of a lm_anaylsis object in a Forest plot.}
 \usage{
 \method{plot_forest}{lm_analysis}(
-  lm_analysis_object,
+  x,
   transf_fun = identity,
   ci_method = c("default", "distribution", "normal"),
   plot_title = NULL,
@@ -17,7 +17,7 @@
 )
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{x}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{transf_fun}{function used for transformation of the estimates and confidence intervals, identity() by default.}
 

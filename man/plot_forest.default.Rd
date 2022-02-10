@@ -5,7 +5,7 @@
 \title{Display modeling results in a Forest plot.}
 \usage{
 \method{plot_forest}{default}(
-  data,
+  x,
   variable = "variable",
   parameter = "parameter",
   level = "level",
@@ -37,7 +37,7 @@
 )
 }
 \arguments{
-\item{data}{data frame.}
+\item{x}{data frame.}
 
 \item{variable}{name of the variable storing explanatory feature labels.}
 

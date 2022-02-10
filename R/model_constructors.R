@@ -152,3 +152,17 @@
               class = 'lm_analysis')
 
   }
+
+
+#' Check lm_analysis class.
+#'
+#' @description Checks if the object is an instance of the lm_analysis class.
+#' @param x an object.
+#' @return a logical value.
+#' @export
+
+  is_lm_analysis <- function(x) {
+
+    any(class(x) == 'lm_analysis')
+
+  }

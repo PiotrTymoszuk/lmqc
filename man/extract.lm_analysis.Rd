@@ -5,13 +5,14 @@
 \title{Extract features of lm_analysis objects}
 \usage{
 \method{extract}{lm_analysis}(
-  lm_analysis_object,
-  what = c("data", "formula", "inference", "fit", "n", "n_levels"),
+  x,
+  what = c("data", "formula", "inference", "fit", "assumptions", "n", "n_levels",
+    "prediction"),
   ...
 )
 }
 \arguments{
-\item{lm_analysis_object}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
+\item{x}{an object of class 'lm_analysis' created e.g. by \code{\link{make_lm}}.}
 
 \item{what}{name of the requested feature.}
 
@@ -26,6 +27,6 @@ a handy extractor function enabling access to the model frame, formulas and more
 }
 \details{
 'data' returns the model frame, 'formula' returns the formula, 'inference' returns
-the inference summary, 'fit' the summary of fit stats, 'n' the number of complete cases, 'n_levels' the number
-of complete observations within the variable levels
+the inference summary, 'fit' the summary of fit stats, 'assumptions' the normality of residuals and EOV stats,
+'n' the number of complete cases, 'n_levels' the number of complete observations within the variable levels
 }
